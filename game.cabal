@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dfd242f1204b2baf3c83f31e7468b3990a37b85fe1ae876d4c442611b098ee25
+-- hash: 1a854f142d272ca0e6c6c0e026f034b3e84968af278bf52b19338dbd8a2e2801
 
 name:           game
 version:        0.1.0.0
@@ -24,6 +24,7 @@ executable game
   other-modules:
       AppM
       Control.Signal
+      Game.Entities
       Game.MainSignal
       Game.Scene
       Game.Scenes.Level

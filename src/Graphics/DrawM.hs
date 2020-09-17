@@ -16,6 +16,7 @@ import qualified SDL
 import qualified SDL.Image as SDLI
 import Linear.V2
 import Linear.V4 (V4 (V4))
+import Control.Monad.Trans.Class (MonadTrans)
 
 newtype DrawM a = DrawM {runDrawM :: ReaderT DrawEnv AppM a} deriving (Functor, Applicative, Monad, MonadIO)
 

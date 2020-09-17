@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module Game.Scenes.Level where
 
 import AppM
@@ -15,8 +16,14 @@ import Apecs.Physics
 import Linear.V2
 
 levelSignal :: Signal AppM (Input, LevelState) (Either Scene LevelState)
-levelSignal = arrM $ \(i,ls) -> do
-  runApecs ls $ do
-    stepPhysics 0.016
-    cmap $ (\(Position p) -> Position $ p + (fromIntegral <$> inputDirection i))
-  pure $ Right ls
+levelSignal = makeSignal level
+  where
+    makeSignal :: Signal (LevelM AppM) Input () -> Signal AppM (Input, LevelState) (Either Scene LevelState) 
+    makeSignal sig = Signal $ \(i,ls) -> do
+      (_,cont) <- runLevelM ls $ stepSignal sig i
+      pure (Right ls, makeSignal cont)
+
+level :: Signal (LevelM AppM) Input ()
+level = arrM $ \i -> embedApecs $ do
+  stepPhysics 0.016
+  cmap $ (\(Player) -> Force (fromIntegral <$> 5000 * inputDirection i))
