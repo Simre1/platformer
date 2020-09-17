@@ -1,0 +1,57 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: dfd242f1204b2baf3c83f31e7468b3990a37b85fe1ae876d4c442611b098ee25
+
+name:           game
+version:        0.1.0.0
+category:       Web
+homepage:       https://github.com/githubuser/game#readme
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2020 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+executable game
+  main-is: Main.hs
+  other-modules:
+      AppM
+      Control.Signal
+      Game.MainSignal
+      Game.Scene
+      Game.Scenes.Level
+      Game.Scenes.MainMenu
+      Game.World
+      Graphics.DrawM
+      Graphics.MainSignal
+      Input
+      Test
+      Paths_game
+  hs-source-dirs:
+      src
+  default-extensions: OverloadedStrings TypeFamilies DataKinds NamedFieldPuns LambdaCase TupleSections GeneralizedNewtypeDeriving DeriveGeneric RankNTypes FlexibleInstances FlexibleContexts MultiParamTypeClasses GADTs
+  build-depends:
+      StateVar
+    , apecs
+    , apecs-physics
+    , base
+    , containers
+    , hashable
+    , hashtables
+    , linear
+    , mtl
+    , sdl2
+    , sdl2-gfx
+    , sdl2-image
+    , text
+    , transformers
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
