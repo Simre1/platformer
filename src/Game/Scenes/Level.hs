@@ -25,5 +25,11 @@ levelSignal = makeSignal level
 
 level :: Signal (LevelM AppM) Input ()
 level = arrM $ \i -> embedApecs $ do
-  stepPhysics 0.016
-  cmap $ (\(Player) -> Force (fromIntegral <$> 5000 * inputDirection i))
+  stepPhysics (1/60)
+  cmap $ (\(Player canJump, Velocity v) -> Velocity (((V2 (fx canJump) (fy canJump)) <*> (fromIntegral <$> inputDirection i) <*> v) ))
+    where fx canJump iX x
+            | canJump = iX * 5 + x
+            | otherwise = x + 2 * iX
+          fy canJump iY y
+            | iY > 0 && canJump = 400
+            | otherwise = y

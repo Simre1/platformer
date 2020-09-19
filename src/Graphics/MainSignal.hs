@@ -13,18 +13,22 @@ import Debug.Trace (traceShowId)
 import Foreign.C.Types (CDouble(..), CInt)
 
 drawSignal :: SDL.Window -> Signal AppM Scene ()
-drawSignal window = runDrawSignal window (V2 400 300) $ arrM $ \gameState -> do
+drawSignal window = runDrawSignal window (V2 960 540) $ arrM $ \gameState -> do
   tex <- getTexture TPlayer
   renderer <- getRenderer
   case gameState of
     MainMenu _ -> do
       SDL.copy renderer tex Nothing Nothing
     Level ls -> runLevelM ls $ embedApecs $ do
-      cmapM_ $ \(Player, Position p) -> do
-        rect <- lift $ lift $ makeRectangle (round <$> p) (V2 60 60)
-        SDL.copyEx renderer tex Nothing (Just rect) (rotation p) Nothing (pure False)
+      cmapM_ $ \(Player _, Position p, Angle a) -> do
+        rect <- lift $ lift $ makeRectangle (round <$> p - V2 30 30) (V2 60 60)
+        SDL.copyEx renderer tex Nothing (Just rect) (rotation a) Nothing (pure False)
+      cmapM_ $ \(Platform size, Position p) -> do
+        rect <- lift $ lift $ makeRectangle ((round <$> p) - fmap (`quot` 2) size) size
+        SDL.rendererDrawColor renderer SDL.$= pure maxBound
+        SDL.fillRect renderer (Just rect)
   pure ()
-    where rotation (V2 x y) = CDouble $ 6 * x
+    where rotation a = CDouble $ -180 * a / pi
 
 -- makeRectangle :: V2 Double -> V2 Double -> SDL.Rectangle CInt
 -- makeRectangle (V2 x' y') (V2 rx' ry') = 
