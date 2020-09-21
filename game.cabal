@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1a854f142d272ca0e6c6c0e026f034b3e84968af278bf52b19338dbd8a2e2801
+-- hash: 7a8a279e8645d9df6f79a9bc659d73a774e80d9639f4acf9e4c4e96ba0c428b2
 
 name:           game
 version:        0.1.0.0
@@ -30,24 +30,27 @@ executable game
       Game.Scenes.Level
       Game.Scenes.MainMenu
       Game.World
-      Graphics.DrawM
       Graphics.MainSignal
+      Graphics.Next
       Input
       Test
       Paths_game
   hs-source-dirs:
       src
-  default-extensions: OverloadedStrings TypeFamilies DataKinds NamedFieldPuns LambdaCase TupleSections GeneralizedNewtypeDeriving DeriveGeneric RankNTypes FlexibleInstances FlexibleContexts MultiParamTypeClasses GADTs
+  default-extensions: OverloadedStrings TypeFamilies DataKinds NamedFieldPuns LambdaCase TupleSections GeneralizedNewtypeDeriving DeriveGeneric RankNTypes FlexibleInstances FlexibleContexts MultiParamTypeClasses GADTs ScopedTypeVariables TypeApplications
   build-depends:
       StateVar
     , apecs
     , apecs-physics
     , base
+    , binary
+    , colour
     , containers
     , hashable
     , hashtables
     , linear
     , mtl
+    , pqueue
     , sdl2
     , sdl2-gfx
     , sdl2-image

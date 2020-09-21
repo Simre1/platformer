@@ -65,7 +65,7 @@ getGravity :: SpacePtr -> IO (V2 Double)
 getGravity spacePtr = withForeignPtr spacePtr $ \space -> do
   x <- [C.exp| double { cpSpaceGetGravity ($(cpSpace* space)).x } |]
   y <- [C.exp| double { cpSpaceGetGravity ($(cpSpace* space)).y } |]
-  return (V2 (realToFrac x) (realToFrac y))
+  pure (V2 (realToFrac x) (realToFrac y))
 
 setGravity :: SpacePtr -> V2 Double -> IO ()
 setGravity spacePtr (V2 (realToFrac -> x) (realToFrac -> y)) = withForeignPtr spacePtr $ \space -> [C.block| void {
@@ -86,6 +86,33 @@ instance MonadIO m => ExplGet m (Space Gravity) where
   explGet (Space _ _ _ _ spcPtr) _ = liftIO $ Gravity <$> getGravity spcPtr
 instance MonadIO m => ExplSet m (Space Gravity) where
   explSet (Space _ _ _ _ spcPtr) _ (Gravity v) = liftIO $ setGravity spcPtr v
+
+-- Dampening
+
+setDamping :: SpacePtr -> Double -> IO ()
+setDamping spacePtr (realToFrac -> d) = withForeignPtr spacePtr $ \space -> [C.block| void {
+  cpSpaceSetDamping($(cpSpace* space), $(double d));
+  } |]
+
+getDamping :: SpacePtr -> IO Double
+getDamping spacePtr = withForeignPtr spacePtr $ \space -> do
+  d <- [C.exp| double { cpSpaceGetDamping($(cpSpace* space)) } |]
+  pure $ realToFrac d
+
+instance Component Damping where
+  type Storage Damping = Space Damping
+
+instance (MonadIO m, Has w m Physics) => Has w m Damping where
+  getStore = (cast :: Space Physics -> Space Damping) <$> getStore
+
+type instance Elem (Space Damping) = Damping
+
+instance MonadIO m => ExplGet m (Space Damping) where
+  explExists _ _  = return True
+  explGet (Space _ _ _ _ spcPtr) _ = liftIO $ Damping <$> getDamping spcPtr
+instance MonadIO m => ExplSet m (Space Damping) where
+  explSet (Space _ _ _ _ spcPtr) _ (Damping v) = liftIO $ setDamping spcPtr v
+
 
 -- Iterations
 getIterations :: SpacePtr -> IO Int

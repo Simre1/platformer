@@ -132,8 +132,13 @@ newtype Density         = Density         Double     deriving (Eq, Show)
 --
 -- See <https://en.wikipedia.org/wiki/Friction> for more information.
 newtype Friction        = Friction        Double     deriving (Eq, Show)
+
+-- | Allows to implement moving surfaces, for example creating conveyor belts or moving players. Surface velocity only affects Friction and has no impact on collision resolution!
 newtype SurfaceVelocity = SurfaceVelocity Vec        deriving (Eq, Show)
 
+-- | Shapes with the same `CollisionGroup` do not collide with one another. 
+-- This can be used for bodies which consist of multiple shapes.
+-- If this feature is no needed, use noCollisionGroup.
 type CollisionGroup = CUInt
 
 -- | Collision Filters determine what shapes this shape collides with.
@@ -185,9 +190,9 @@ type SpacePtr = ForeignPtr FrnSpace
 
 -- | Number of iterations per step, global value
 newtype Iterations = Iterations Int deriving (Eq, Show)
--- | Gravity force vector, global value
+-- | Gravity force vector, global value (not yet possible to set individually for an entity)
 newtype Gravity = Gravity Vec deriving (Eq, Show)
--- | Daming factor, global value
+-- | Daming factor, global value (not yet possible to set individually for an entity)
 newtype Damping = Damping Double deriving (Eq, Show)
 -- | Speed threshold to be considered idle, and a candidate for being put to sleep. Global value.
 -- Bodies with a speed less than this will not be simulated until a force acts upon them,
@@ -205,9 +210,14 @@ cast :: Space a -> Space b
 cast (Space b s c h w) = Space b s c h w
 
 -- Constraint subcomponents
+-- | The maximum force that a constraint can exert (default is infinity).
 newtype MaxForce      = MaxForce      Double deriving (Eq, Show)
+-- | The maximum speed at which the contraint can apply error correction (default is infinity).
 newtype MaxBias       = MaxBias       Double deriving (Eq, Show)
+-- | The percentage of joint error that remains unfixed after a second
 newtype ErrorBias     = ErrorBias     Double deriving (Eq, Show)
+-- | If two bodies collide and they are connected with a constraint where `CollideBodies` is set to False, then that collision is ignored.
+-- That way, constraint can used for filtering collisions. 
 newtype CollideBodies = CollideBodies Bool   deriving (Eq, Show)
 newtype Impulse       = Impulse       Double deriving (Eq, Show)
 

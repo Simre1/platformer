@@ -6,7 +6,7 @@ module Apecs.Physics (
   Physics,
 
   -- * Space
-  Gravity (..), Iterations (..),
+  Gravity (..), Iterations (..), Damping(..),
   stepPhysics,
   earthGravity,
 
@@ -18,7 +18,7 @@ module Apecs.Physics (
   -- * Shape
   Convex (..), Shape (..),
   Mass (..), Density (..), Sensor (..), Friction (..), Elasticity (..), SurfaceVelocity (..),
-  CollisionFilter (..), CollisionType(..),
+  CollisionGroup (..), noCollisionGroup, CollisionFilter (..), CollisionType(..),
   Bitmask (..), maskAll, maskNone, maskList, defaultFilter, boxShape,
 
   -- * Constraint

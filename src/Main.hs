@@ -18,8 +18,7 @@ main = do
   window <- SDL.createWindow "test" SDL.defaultWindow
   runAppM $
     reactimate $
-      limitExecutionRate 60 $ countFrameRate >>>
-        inputSignal
+      limitExecutionRate 60 $ inputSignal
           >>> (gameSignal (MainMenu MainMenuState) >>> drawSignal window)
           *> arr
             ( \i -> if inputQuit i then Just () else Nothing
