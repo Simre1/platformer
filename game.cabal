@@ -1,11 +1,3 @@
-cabal-version: 1.12
-
--- This file has been generated from package.yaml by hpack version 0.33.0.
---
--- see: https://github.com/sol/hpack
---
--- hash: 7a8a279e8645d9df6f79a9bc659d73a774e80d9639f4acf9e4c4e96ba0c428b2
-
 name:           game
 version:        0.1.0.0
 category:       Web
@@ -15,9 +7,17 @@ maintainer:     example@example.com
 copyright:      2020 Author name here
 license:        BSD3
 license-file:   LICENSE
-build-type:     Simple
 extra-source-files:
     README.md
+
+build-type: Custom
+cabal-version: >=2.0
+
+custom-setup
+  setup-depends:
+    base >= 4.14 && < 5,
+    Cabal >= 3.2.0.0 && < 4,
+    cabal-auto-expose
 
 executable game
   main-is: Main.hs
@@ -27,17 +27,19 @@ executable game
       Game.Entities
       Game.MainSignal
       Game.Scene
+      Game.Scenes.Editor
       Game.Scenes.Level
       Game.Scenes.MainMenu
       Game.World
       Graphics.MainSignal
-      Graphics.Next
+      Graphics.V2
       Input
       Test
+      Data.Geometry
       Paths_game
   hs-source-dirs:
       src
-  default-extensions: OverloadedStrings TypeFamilies DataKinds NamedFieldPuns LambdaCase TupleSections GeneralizedNewtypeDeriving DeriveGeneric RankNTypes FlexibleInstances FlexibleContexts MultiParamTypeClasses GADTs ScopedTypeVariables TypeApplications
+  default-extensions: OverloadedStrings TypeFamilies DataKinds NamedFieldPuns LambdaCase TupleSections GeneralizedNewtypeDeriving DeriveGeneric RankNTypes FlexibleInstances FlexibleContexts MultiParamTypeClasses GADTs ScopedTypeVariables TypeApplications RecursiveDo DeriveFunctor
   build-depends:
       StateVar
     , apecs
@@ -58,4 +60,5 @@ executable game
     , transformers
     , unordered-containers
     , vector
+    , rapid
   default-language: Haskell2010

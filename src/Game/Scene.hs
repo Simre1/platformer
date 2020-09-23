@@ -9,7 +9,7 @@ import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Trans.Reader
 import Control.Monad.Trans.Class (MonadTrans)
 
-data Scene = MainMenu MainMenuState | Level LevelState
+data Scene = MainMenu MainMenuState | Level LevelState | Editor LevelState
 
 data LevelState = LevelState {levelWorld :: World}
 

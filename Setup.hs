@@ -1,2 +1,4 @@
-import Distribution.Simple
-main = defaultMain
+import Distribution.Simple.AutoExpose as AutoExpose
+
+main :: IO ()
+main = AutoExpose.defaultMain

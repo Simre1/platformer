@@ -2,7 +2,7 @@
 
 ## How to run
 
-Package manager: stack
+Package manager: cabal
 
 Needed system libraries:
 - sdl2

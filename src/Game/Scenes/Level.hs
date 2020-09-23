@@ -1,23 +1,24 @@
+{-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Game.Scenes.Level where
 
-import AppM
 import Apecs
 import Apecs (SystemT, runSystem)
 import Apecs.Physics
-import Control.Monad.IO.Class (MonadIO)
+import AppM
 import Control.Arrow
+import Control.Monad.IO.Class (MonadIO)
 import Control.Monad (forM_)
 import Control.Monad.Trans.Class (lift)
+import Control.Monad.Trans.Reader
 import Control.Signal
 import Data.Colour (withOpacity)
-import Data.Colour.Names (white, black)
+import Data.Colour.Names (black, white)
+import Debug.Trace (traceShow, traceShowId)
 import Game.Scene
 import Game.World
-import Graphics.Next
 import Input
-import Control.Monad.Trans.Reader
 import Linear.V2
 
 levelSignal :: Signal AppM (Input, LevelState) (Either Scene LevelState)
@@ -29,19 +30,22 @@ levelSignal = makeSignal level
       pure (Right ls, makeSignal cont)
 
 level :: Signal (LevelM AppM) Input ()
-level = arrM $ \i -> embedApecs $ do
+level = feedback 0 $ arrM $ \(i,prevY) -> embedApecs $ do
   stepPhysics (1 / 60)
+  jump <- cfold (\_ (Player cj, Position (V2 _ y)) -> if cj then succ prevY else 0) 0
   let (V2 iX _) = inputDirection i
-  set global $ Camera $ Rectangle (V2 480 270) (V2 960 540)
-  cmap $ \(Player canJump, Velocity v, Position p, Angle a) ->
-    (,)
-      (Force ((V2 (fx canJump) (fy canJump)) <*> (fromIntegral <$> inputDirection i)))
-      (Draw 0 $ CopyEx TPlayer Nothing (Just (Rectangle (round <$> p) (V2 32 64))) Nothing (rotation a) (pure False))
+  cmapM $ \(Player _, Velocity v, Position pos@(V2 pX pY), Angle a, ShapeList [e]) ->
+      let canJump = jump > 10 in
+      let V2 (sX,fX) (sY,fY) = V2 (fx canJump) (fy canJump) <*> inputDirection i
+      in do
+        set e $ SurfaceVelocity (V2 sX sY)
+        pure $ (Force (V2 fX fY), SurfaceVelocity (V2 sX sY))
+  pure ((), jump)
   where
-    fx canJump iX
-      | canJump = iX * 3000
-      | otherwise = 1000 * iX
-    fy canJump iY
-      | iY > 0 && canJump = 100000
-      | otherwise = 0
-    rotation a = (negate a / pi) * 180
+    nearly a b = traceShow (a, b) $ a - b < 0.0001
+    fx canJump (fromIntegral -> iX)
+      | canJump = (-2000000 * iX, iX * 1500)
+      | otherwise = (0, 1000 * iX)
+    fy canJump (fromIntegral -> iY)
+      | iY > 0 && canJump = (0, 210000)
+      | otherwise = (0, 0)

@@ -8,7 +8,7 @@ import Control.Monad.IO.Class (liftIO, MonadIO)
 import GHC.Clock (getMonotonicTimeNSec)
 import Control.Concurrent (threadDelay)
 
-data Signal m a b = Signal {stepSignal :: a -> m (b, Signal m a b)}
+newtype Signal m a b = Signal {stepSignal :: a -> m (b, Signal m a b)}
 
 instance Functor m => Functor (Signal m a) where
   fmap f (Signal step) = Signal $ fmap (\(b, cont) -> (f b, fmap f cont)) . step
@@ -41,7 +41,7 @@ morphContext :: Functor g => (forall x. f x -> g x) -> Signal f a b -> Signal g 
 morphContext f = morphSignal (f .)
 
 feedback :: Functor m => s -> Signal m (a,s) (b,s) -> Signal m a b
-feedback s (Signal step) = Signal $ \a -> (\((b,s),cont) -> (b,feedback s cont)) <$> step (a,s)
+feedback s (Signal step) = Signal $ \a -> (\((b,newS),cont) -> (b,feedback newS cont)) <$> step (a,s)
 
 switch :: Monad m => Signal m a (Either c b) -> (c -> Signal m a b) -> Signal m a b
 switch (Signal step) nextSignal = Signal $ \a -> do
