@@ -3,16 +3,15 @@ module Game.MainSignal where
 import AppM
 import Control.Signal
 import Game.Scene
-import Game.Scenes.Editor
 import Game.Scenes.Level
 import Game.Scenes.MainMenu
 import Input
+import Control.Arrow
 
 gameSignal :: Scene -> Signal AppM Input Scene
 gameSignal scene = case scene of
   MainMenu s -> customSwitch MainMenu s mainMenuSignal
-  Level s -> customSwitch Level s levelSignal
-  Editor s -> customSwitch Editor s editorSignal
+  Level s -> simpleFeedback s levelSignal >>> (arr Level)
   where
     customSwitch :: (s -> Scene) -> s -> Signal AppM (Input, s) (Either Scene s) -> Signal AppM Input Scene
     customSwitch f s signal = Signal $ \i -> do

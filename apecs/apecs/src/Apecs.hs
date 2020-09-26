@@ -16,7 +16,7 @@ module Apecs (
     destroy, exists,
     modify, ($~),
     cmap,  cmapM,  cmapM_,
-    cfold, cfoldM, cfoldM_,
+    cfoldMap, cfold, cfoldM, cfoldM_,
 
   -- * Other
     runSystem, runWith,

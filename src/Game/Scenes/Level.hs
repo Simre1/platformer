@@ -21,17 +21,17 @@ import Game.World
 import Input
 import Linear.V2
 
-levelSignal :: Signal AppM (Input, LevelState) (Either Scene LevelState)
+levelSignal :: Signal AppM (Input, LevelState) LevelState
 levelSignal = makeSignal level
-  where
-    makeSignal :: Signal (LevelM AppM) Input () -> Signal AppM (Input, LevelState) (Either Scene LevelState)
-    makeSignal sig = Signal $ \(i, ls) -> do
-      (_, cont) <- runLevelM ls $ stepSignal sig i
-      pure (Right ls, makeSignal cont)
+  where makeSignal sig = Signal $ \(i, ls) -> do
+          (_, cont) <- runLevelM ls $ stepSignal sig i
+          pure (ls, makeSignal cont)
 
 level :: Signal (LevelM AppM) Input ()
 level = feedback 0 $ arrM $ \(i,prevY) -> embedApecs $ do
   stepPhysics (1 / 60)
+  Gravity v <- get global
+  liftIO $ print v
   jump <- cfold (\_ (Player cj, Position (V2 _ y)) -> if cj then succ prevY else 0) 0
   let (V2 iX _) = inputDirection i
   cmapM $ \(Player _, Velocity v, Position pos@(V2 pX pY), Angle a, ShapeList [e]) ->

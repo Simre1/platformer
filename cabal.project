@@ -1,1 +1,1 @@
-packages: *.cabal, apecs/*/*.cabal
+packages: *.cabal, apecs/*/*.cabal, aeson-tiled

@@ -1,17 +1,20 @@
-# game
+# platformer
 
-## How to run
+This is the platformer game I am currently working on. 
 
-Package manager: cabal
+## How to build
 
-Needed system libraries:
+You need the following system libraries:
 - sdl2
 - sdl2_gfx
 - sdl2_image
 
-```base
+Then it should be as simple as:
+```bash
 git clone https://github.com/Simre1/platformer
 cd platformer
-stack build
-stack exec game
+cabal build
+cabal exec game
 ```
+
+The main focus right now is implementing level creation through the [OGMO level editor](https://ogmo-editor-3.github.io/). Right now, only the player und platforms are available.

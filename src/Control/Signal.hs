@@ -43,6 +43,9 @@ morphContext f = morphSignal (f .)
 feedback :: Functor m => s -> Signal m (a,s) (b,s) -> Signal m a b
 feedback s (Signal step) = Signal $ \a -> (\((b,newS),cont) -> (b,feedback newS cont)) <$> step (a,s)
 
+simpleFeedback :: Functor m => b -> Signal m (a,b) b -> Signal m a b
+simpleFeedback initial (Signal step) = Signal $ \a -> (\(b,cont) -> (b,simpleFeedback b cont)) <$> step (a,initial)
+
 switch :: Monad m => Signal m a (Either c b) -> (c -> Signal m a b) -> Signal m a b
 switch (Signal step) nextSignal = Signal $ \a -> do
   (res, cont) <- step a

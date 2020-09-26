@@ -27,12 +27,13 @@ executable game
       Game.Entities
       Game.MainSignal
       Game.Scene
-      Game.Scenes.Editor
       Game.Scenes.Level
       Game.Scenes.MainMenu
       Game.World
       Graphics.MainSignal
       Graphics.V2
+      Data.Ogmo
+      Game.LoadOgmo
       Input
       Test
       Data.Geometry
@@ -61,4 +62,12 @@ executable game
     , unordered-containers
     , vector
     , rapid
+    , xeno
+    , bytestring
+    , aeson
   default-language: Haskell2010
+  ghc-options:
+    -Wall
+    -O2
+    -static
+    -threaded

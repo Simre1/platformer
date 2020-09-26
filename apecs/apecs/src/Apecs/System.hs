@@ -132,6 +132,12 @@ cmapM_ sys = do
     x <- lift$ explGet s ety
     sys x
 
+
+-- | Map over the game world and combine the results according to their Monoid instance.
+--   Strict in the accumulator.
+cfoldMap :: (Has w m t, Monoid a, ExplMembers m (Storage t), ExplGet m (Storage t)) => (t -> a) -> SystemT w m a
+cfoldMap f = cfold (\o d -> o <> f d) mempty
+
 -- | Fold over the game world; for example, @cfold max (minBound :: Foo)@ will find the maximum value of @Foo@.
 --   Strict in the accumulator.
 {-# INLINE cfold #-}
