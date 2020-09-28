@@ -31,7 +31,6 @@ level :: Signal (LevelM AppM) Input ()
 level = feedback 0 $ arrM $ \(i,prevY) -> embedApecs $ do
   stepPhysics (1 / 60)
   Gravity v <- get global
-  liftIO $ print v
   jump <- cfold (\_ (Player cj, Position (V2 _ y)) -> if cj then succ prevY else 0) 0
   let (V2 iX _) = inputDirection i
   cmapM $ \(Player _, Velocity v, Position pos@(V2 pX pY), Angle a, ShapeList [e]) ->

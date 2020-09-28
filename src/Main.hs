@@ -15,11 +15,11 @@ import Control.Monad.IO.Class (MonadIO(liftIO))
 main :: IO ()
 main = do
   SDL.initializeAll
-  window <- SDL.createWindow "test" SDL.defaultWindow
+  win <- SDL.createWindow "test" SDL.defaultWindow
   runAppM $
     reactimate $
-      limitExecutionRate 60 $ inputSignal
-          >>> (gameSignal (MainMenu MainMenuState) >>> drawSignal window)
+      limitExecutionRate 60 $ inputSignal >>> 
+        (duplicate >>> second (gameSignal (MainMenu MainMenuState)) >>> drawSignal win)
           *> arr
             ( \i -> if inputQuit i then Just () else Nothing
             )

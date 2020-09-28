@@ -2,7 +2,7 @@ module Game.LoadOgmo where
 
 import Apecs
 import Control.Applicative (Alternative ((<|>)))
-import Control.Monad (forM_)
+import Control.Monad (join, forM_)
 import Control.Monad.Fix (MonadFix)
 import Control.Monad.IO.Class (MonadIO (..))
 import qualified Data.HashMap.Strict as H
@@ -12,17 +12,23 @@ import qualified Data.Text as T
 import Game.World
 import Linear.V2
 import Apecs.Physics
+import Graphics.Draw
+import System.Directory
+
 
 loadOgmo :: (MonadIO m, MonadFix m) => Project -> Level -> SystemT World m ()
 loadOgmo project level = do
+  liftIO $ setCurrentDirectory $ T.unpack $ pWorkingDirectory project
 
   set global (Gravity (V2 0 (-600)), Damping 0.9)
 
   let [l] = lLayers level
       entities = lEntities l
   forM_ entities $ \entity -> do
+    texturePath <- fmap join . traverse makeTexturePath $ projectEntity (eClass entity) >>= peTexture
+
     case eName entity of
-      "Player" -> makePlayer (inverse l $ ePos entity) (fromMaybe (V2 32 64) $ peSize <$> projectEntity (eClass entity))
+      "Player" -> makePlayer (fromMaybe DefaultPath texturePath) (inverse l $ ePos entity) (fromMaybe (V2 32 64) $ peSize <$> projectEntity (eClass entity))
       "Platform" ->
         makePlatform
           (inverse l $ ePos entity)

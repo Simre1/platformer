@@ -81,3 +81,6 @@ reactimate signal = stepSignal signal () >>= \case
 
 once :: Monad m => m x -> (x -> Signal m a b) -> Signal m a b
 once m f = Signal $ \a -> m >>= flip stepSignal a . f
+
+duplicate :: Monad m => Signal m a (a,a)
+duplicate = arr $ \a -> (a,a)
