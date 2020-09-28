@@ -138,6 +138,7 @@ initTextureManager tc renderer = do
         writeGraphicsChan tc $ do
           texture <- surfaceToTexture renderer surface
           atomicModifyIORef' cacheRef $ \m -> (HM.insert path (CachedTexture texture) m, ())
+          SDL.freeSurface surface
       _ -> pure ()
   let cleanUp = do
         killThread threadId
