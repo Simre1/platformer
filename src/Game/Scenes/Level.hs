@@ -29,7 +29,6 @@ levelSignal = makeSignal level
 
 level :: Signal (LevelM AppM) Input ()
 level = feedback 0 $ arrM $ \(i,prevY) -> embedApecs $ do
-  stepPhysics (1 / 60)
   Gravity v <- get global
   jump <- cfold (\_ (Player cj, Position (V2 _ y)) -> if cj then succ prevY else 0) 0
   let (V2 iX _) = inputDirection i
@@ -38,13 +37,14 @@ level = feedback 0 $ arrM $ \(i,prevY) -> embedApecs $ do
       let V2 (sX,fX) (sY,fY) = V2 (fx canJump) (fy canJump) <*> inputDirection i
       in do
         set e $ SurfaceVelocity (V2 sX sY)
-        pure $ (Force (V2 fX fY), SurfaceVelocity (V2 sX sY))
+        pure $ (Force (V2 fX 0), Impulse (V2 0 fY), SurfaceVelocity (V2 sX sY))
+  stepPhysics (1 / 60)
   pure ((), jump)
   where
     nearly a b = traceShow (a, b) $ a - b < 0.0001
     fx canJump (fromIntegral -> iX)
-      | canJump = (-2000000 * iX, iX * 1500)
+      | canJump = (-4000 * iX, iX * 1500)
       | otherwise = (0, 1000 * iX)
     fy canJump (fromIntegral -> iY)
-      | iY > 0 && canJump = (0, 210000)
+      | iY > 0 && canJump = (0, 8000)
       | otherwise = (0, 0)

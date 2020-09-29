@@ -41,7 +41,7 @@ executable game
       Paths_game
   hs-source-dirs:
       src
-  default-extensions: OverloadedStrings TypeFamilies DataKinds NamedFieldPuns LambdaCase TupleSections GeneralizedNewtypeDeriving DeriveGeneric RankNTypes FlexibleInstances FlexibleContexts MultiParamTypeClasses GADTs ScopedTypeVariables TypeApplications RecursiveDo DeriveFunctor
+  default-extensions: OverloadedStrings TypeFamilies DataKinds NamedFieldPuns LambdaCase TupleSections GeneralizedNewtypeDeriving DeriveGeneric RankNTypes FlexibleInstances FlexibleContexts MultiParamTypeClasses GADTs ScopedTypeVariables TypeApplications RecursiveDo DeriveFunctor ViewPatterns
   build-depends:
       StateVar
     , apecs

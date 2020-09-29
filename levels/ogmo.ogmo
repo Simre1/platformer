@@ -1,0 +1,122 @@
+{
+  "name": "New Project",
+  "ogmoVersion": "3.3.0",
+  "levelPaths": ["."],
+  "backgroundColor": "#282c34ff",
+  "gridColor": "#3c4049cc",
+  "anglesRadians": true,
+  "directoryDepth": 5,
+  "layerGridDefaultSize": {"x": 8, "y": 8},
+  "levelDefaultSize": {"x": 320, "y": 240},
+  "levelMinSize": {"x": 128, "y": 128},
+  "levelMaxSize": {"x": 4096, "y": 4096},
+  "levelValues": [],
+  "defaultExportMode": ".json",
+  "compactExport": false,
+  "externalScript": "",
+  "playCommand": "cabal exec game ogmo.ogmo ogmo.json",
+  "entityTags": [],
+  "layers": [
+    {
+      "definition": "entity",
+      "name": "entities",
+      "gridSize": {"x": 8, "y": 8},
+      "exportID": "04700215",
+      "requiredTags": [],
+      "excludedTags": []
+    }
+  ],
+  "entities": [
+    {
+      "exportID": "04718852",
+      "name": "Player",
+      "limit": 1,
+      "size": {"x": 32, "y": 64},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ff8800ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 32, "y": 64},
+      "resizeableX": false,
+      "resizeableY": false,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 2,
+      "nodeGhost": false,
+      "tags": [],
+      "values": [
+        {
+          "name": "type",
+          "definition": "Enum",
+          "choices": ["Player"],
+          "defaults": 0
+        }
+      ],
+      "texture": "textures/player.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAABACAYAAAB7jnWuAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TpSqVDo0g4pChOlkQFXHUKhShQqgVWnUwH/2CJg1Jiouj4Fpw8GOx6uDirKuDqyAIfoA4OTopukiJ/0sKLWI8OO7Hu3uPu3cA16gomtU1Dmi6baaTCSGbWxVCr+jFACLgEZUUy5gTxRR8x9c9Amy9i7Ms/3N/jn41bylAQCCeVQzTJt4gnt60Dcb7xLxSklTic+Ixky5I/Mh02eM3xkWXOZbJm5n0PDFPLBQ7WO5gpWRqxFPEMVXTKZ/Leqwy3mKsVWpK657sheG8vrLMdJrDSGIRSxAhQEYNZVRgI06rToqFNO0nfPxDrl8kl0yuMhRyLKAKDZLrB/uD391ahckJLymcALpfHOdjBAjtAs2643wfO07zBAg+A1d6219tADOfpNfbWuwIiGwDF9dtTd4DLneAwSdDMiVXCtLkCgXg/Yy+KQdEb4G+Na+31j5OH4AMdZW6AQ4OgdEiZa/7vLuns7d/z7T6+wE8TXKRxW4yZAAAAAZiS0dEAAAAVQAxwupXHgAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+QJFQ8mHYBSnigAAAA9SURBVGje7c4xAQAACAOgaWH7XxrDBxJQO9k86jwTEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQOGqxAu2hloZQAAAAAElFTkSuQmCC"
+    },
+    {
+      "exportID": "07493618",
+      "name": "Platform",
+      "limit": -1,
+      "size": {"x": 128, "y": 16},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ffffffff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 16, "y": 16},
+      "resizeableX": true,
+      "resizeableY": true,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": [],
+      "values": [
+        {
+          "name": "type",
+          "definition": "Enum",
+          "choices": [""],
+          "defaults": 0
+        }
+      ]
+    }
+  ],
+  "tilesets": [
+    {"label": "test", "path": "../textures/player.png", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAABACAYAAAB7jnWuAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TpSqVDo0g4pChOlkQFXHUKhShQqgVWnUwH/2CJg1Jiouj4Fpw8GOx6uDirKuDqyAIfoA4OTopukiJ/0sKLWI8OO7Hu3uPu3cA16gomtU1Dmi6baaTCSGbWxVCr+jFACLgEZUUy5gTxRR8x9c9Amy9i7Ms/3N/jn41bylAQCCeVQzTJt4gnt60Dcb7xLxSklTic+Ixky5I/Mh02eM3xkWXOZbJm5n0PDFPLBQ7WO5gpWRqxFPEMVXTKZ/Leqwy3mKsVWpK657sheG8vrLMdJrDSGIRSxAhQEYNZVRgI06rToqFNO0nfPxDrl8kl0yuMhRyLKAKDZLrB/uD391ahckJLymcALpfHOdjBAjtAs2643wfO07zBAg+A1d6219tADOfpNfbWuwIiGwDF9dtTd4DLneAwSdDMiVXCtLkCgXg/Yy+KQdEb4G+Na+31j5OH4AMdZW6AQ4OgdEiZa/7vLuns7d/z7T6+wE8TXKRxW4yZAAAAAZiS0dEAAAAVQAxwupXHgAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+QJFQ8mHYBSnigAAAA9SURBVGje7c4xAQAACAOgaWH7XxrDBxJQO9k86jwTEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQOGqxAu2hloZQAAAAAElFTkSuQmCC", "tileWidth": 32, "tileHeight": 32, "tileSeparationX": 0, "tileSeparationY": 0}
+  ]
+}

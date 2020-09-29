@@ -8,12 +8,16 @@ import AppM
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Trans.Reader
 import Control.Monad.Trans.Class (MonadTrans)
+import qualified Data.Text as T
 
 data Scene = MainMenu MainMenuState | Level LevelState
 
 data LevelState = LevelState {levelWorld :: World}
 
-data MainMenuState = MainMenuState
+data MainMenuState = MainMenuState 
+  { projectPath :: T.Text
+  , levelPath :: T.Text
+  }
 
 newtype LevelM m a = LevelM (ReaderT LevelState m a) deriving (Functor, Applicative, Monad, MonadIO, MonadTrans)
 

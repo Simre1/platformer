@@ -12,7 +12,7 @@ module Apecs.Physics (
 
   -- * Body
   -- $BODY
-  Body (..), Position (..), Velocity (..), Angle (..), AngularVelocity (..), Force (..),
+  Body (..), Position (..), Velocity (..), Angle (..), AngularVelocity (..), Force (..), Impulse(..),
   BodyMass (..), Moment (..), CenterOfGravity (..), Torque (..), ShapeList (..), ConstraintList (..),
 
   -- * Shape
@@ -22,7 +22,7 @@ module Apecs.Physics (
   Bitmask (..), maskAll, maskNone, maskList, defaultFilter, boxShape,
 
   -- * Constraint
-  Constraint (..), ConstraintType (..), MaxForce (..), MaxBias (..), ErrorBias (..), Impulse (..), CollideBodies (..),
+  Constraint (..), ConstraintType (..), MaxForce (..), MaxBias (..), ErrorBias (..), ConstraintImpulse (..), CollideBodies (..),
 
   -- * Collision
   Collision (..), CollisionHandler (..), defaultHandler,

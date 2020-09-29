@@ -74,7 +74,7 @@ makePlayer path pos (V2 sX sY) = do
       newEntity
         ( Player False,
           DynamicBody,
-          Position (traceShowId $ fromIntegral <$> (pos + V2 ((sX) `quot` 2) ((-sY) `quot` 2))),
+          Position (fromIntegral <$> (pos + V2 ((sX) `quot` 2) ((-sY) `quot` 2))),
           Moment (1/0),
           BodyMass 10,
           draw
@@ -100,7 +100,7 @@ makePlatform pos size@(V2 x y) = mdo
     newEntity
       ( Platform,
         StaticBody,
-        Position (traceShowId $ fromIntegral <$> (pos + V2 ((x) `quot` 2) ((-y) `quot` 2))),
+        Position (fromIntegral <$> (pos + V2 ((x) `quot` 2) ((-y) `quot` 2))),
         draw e
       )
   _ <- newEntity (Shape e $ cRectangle (fromIntegral <$> size), platformFilter, Elasticity 0.2, Friction 0.8)

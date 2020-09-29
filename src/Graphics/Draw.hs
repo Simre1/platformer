@@ -112,7 +112,7 @@ readGraphicsChan (GraphicsChan ref) = atomicModifyIORef' ref $ \seq ->
     a S.:< rest -> (rest, Just a)
 
 
-data CachedTexture = CachedSurface SDL.Surface | CachedTexture SDL.Texture
+data CachedTexture = CachedTexture SDL.Texture | Loading
 
 initTextureManager :: GraphicsChan (IO ()) -> SDL.Renderer -> IO (TextureManager, IO ())
 initTextureManager tc renderer = do
@@ -134,7 +134,7 @@ initTextureManager tc renderer = do
     case HM.lookup path cache of
       Nothing -> do
         surface <- loadSurface path
-        atomicModifyIORef' cacheRef $ \m -> (HM.insert path (CachedSurface surface) m, ())
+        atomicModifyIORef' cacheRef $ \m -> (HM.insert path Loading m, ())
         writeGraphicsChan tc $ do
           texture <- surfaceToTexture renderer surface
           atomicModifyIORef' cacheRef $ \m -> (HM.insert path (CachedTexture texture) m, ())
@@ -152,14 +152,14 @@ initTextureManager tc renderer = do
             case HM.lookup path cache of
               Just (CachedTexture t) -> do
                 pure t
-              Just (CachedSurface _) -> pure defaultTexture
+              (Just Loading) -> pure defaultTexture
               _ -> do
                 U.writeChan inLoading path
                 pure defaultTexture
   pure (manager, cleanUp)
   where 
-    destroyCached (CachedSurface surface) = SDL.freeSurface surface
     destroyCached (CachedTexture tex) = SDL.destroyTexture tex
+    destroyCached _ = pure ()
 
 initGraphics :: SDL.Window -> AppM Graphics
 initGraphics sdlWindow = do

@@ -12,18 +12,18 @@ import Game.World
 import Input
 
 mainMenuSignal :: Signal AppM (Input, MainMenuState) (Either Scene MainMenuState)
-mainMenuSignal = arrM_ $ do
+mainMenuSignal = arrM $ \(i, state) -> do
   project <-
     either
       (\err -> error err)
       (id)
-      <$> O.loadProject "assets/map/ogmo.ogmo"
+      <$> O.loadProject (projectPath state)
 
   level <-
     either
       (\err -> error err)
       (id)
-      <$> O.loadLevel "assets/map/ogmo.json"
+      <$> O.loadLevel (levelPath state)
   world <- liftIO initWorld
   runSystem (O.loadOgmo project level) world
   pure $ Left . Level . LevelState $ world

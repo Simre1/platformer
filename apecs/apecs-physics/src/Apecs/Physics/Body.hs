@@ -266,6 +266,25 @@ instance MonadIO m => ExplGet m (Space Force) where
     Just (BodyRecord b _ _ _) <- M.lookup ety <$> readIORef bMap
     Force <$> getForce b
 
+-- Impulse
+setImpulse :: Ptr Body -> V2 Double -> IO ()
+setImpulse bodyPtr (V2 (realToFrac -> x) (realToFrac -> y)) = [C.block| void {
+  const cpVect impulse = { $(double x), $(double y) };
+  const cpVect point = {0,0};
+  cpBodyApplyImpulseAtLocalPoint($(cpBody* bodyPtr), impulse, point);
+  } |]
+
+instance Component Impulse where
+  type Storage Impulse = Space Impulse
+
+instance (MonadIO m, Has w m Physics) => Has w m Impulse where
+  getStore = (cast :: Space Physics -> Space Impulse) <$> getStore
+
+instance MonadIO m => ExplSet m (Space Impulse) where
+  explSet (Space bMap _ _ _ _) ety (Impulse frc) = liftIO $ do
+    rd <- M.lookup ety <$> readIORef bMap
+    forM_ rd$ \(BodyRecord b _ _ _) -> setImpulse b frc
+
 -- BodyMass
 getBodyMass :: Ptr Body -> IO Double
 getBodyMass bodyPtr = do
