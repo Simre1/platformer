@@ -2,6 +2,8 @@ cradle:
   cabal:
     - path: "./src"
       component: "game:exe:game"
+    - path: "./scripts/entities"
+      component: "game:exe:game"
     - path: "./apecs/apecs"
       component: "apecs:lib:apecs"
     - path: "./apecs/apecs-physics"

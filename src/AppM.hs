@@ -8,7 +8,6 @@ import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Trans (MonadIO (liftIO))
 import Control.Monad.Trans.Reader
 import Data.IORef
-import Control.Signal
 import GHC.Clock (getMonotonicTimeNSec)
 import Control.Concurrent (threadDelay)
 

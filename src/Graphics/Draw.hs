@@ -5,7 +5,7 @@ module Graphics.Draw where
 import Apecs
 import Apecs.Core
     ( Elem, ExplGet(..), ExplInit, ExplMembers(..), ExplSet(..) )
-import AppM
+import Control.AppM
 import Control.Monad (forever, forM_, join)
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Trans.Reader (ReaderT (..), runReaderT)
@@ -96,17 +96,17 @@ data TextureManager = TextureManager {
 }
 
 
-newtype GraphicsChan a = GraphicsChan (IORef (S.Seq a))
+newtype LoadingChan a = LoadingChan (IORef (S.Seq a))
 
-newGraphicsChan :: IO (GraphicsChan a)
-newGraphicsChan = GraphicsChan <$> newIORef S.empty
+newLoadingChan :: IO (LoadingChan a)
+newLoadingChan = LoadingChan <$> newIORef S.empty
 
 
-writeGraphicsChan :: GraphicsChan a -> a -> IO ()
-writeGraphicsChan (GraphicsChan ref) a = atomicModifyIORef' ref $ \s -> (s S.|> a, ()) 
+writeLoadingChan :: LoadingChan a -> a -> IO ()
+writeLoadingChan (LoadingChan ref) a = atomicModifyIORef' ref $ \s -> (s S.|> a, ()) 
 
-readGraphicsChan :: GraphicsChan a -> IO (Maybe a)
-readGraphicsChan (GraphicsChan ref) = atomicModifyIORef' ref $ \seq ->
+readLoadingChan :: LoadingChan a -> IO (Maybe a)
+readLoadingChan (LoadingChan ref) = atomicModifyIORef' ref $ \seq ->
   case S.viewl seq of
     S.EmptyL -> (seq, Nothing)
     a S.:< rest -> (rest, Just a)
@@ -114,7 +114,7 @@ readGraphicsChan (GraphicsChan ref) = atomicModifyIORef' ref $ \seq ->
 
 data CachedTexture = CachedTexture SDL.Texture | Loading
 
-initTextureManager :: GraphicsChan (IO ()) -> SDL.Renderer -> IO (TextureManager, IO ())
+initTextureManager :: LoadingChan (IO ()) -> SDL.Renderer -> IO (TextureManager, IO ())
 initTextureManager tc renderer = do
   cacheRef <- liftIO $ newIORef HM.empty
 
@@ -135,7 +135,7 @@ initTextureManager tc renderer = do
       Nothing -> do
         surface <- loadSurface path
         atomicModifyIORef' cacheRef $ \m -> (HM.insert path Loading m, ())
-        writeGraphicsChan tc $ do
+        writeLoadingChan tc $ do
           texture <- surfaceToTexture renderer surface
           atomicModifyIORef' cacheRef $ \m -> (HM.insert path (CachedTexture texture) m, ())
           SDL.freeSurface surface
@@ -164,31 +164,32 @@ initTextureManager tc renderer = do
 initGraphics :: SDL.Window -> AppM Graphics
 initGraphics sdlWindow = do
 
-  renderChan <- liftIO newGraphicsChan
-  loadingChan <- liftIO newGraphicsChan
+  renderChan <- liftIO $ newIORef mempty
+  loadingChan <- liftIO newLoadingChan
 
+  
   graphicsThread <- liftIO $ forkOS $ do
-
-    renderer <- SDL.createRenderer sdlWindow 0 SDL.defaultRenderer {SDL.rendererType = SDL.AcceleratedRenderer}
+    -- TODO: Figure out why a segmentation fault occures sometimes (especially without a delay)!
+    liftIO $ threadDelay 100000
+    renderer <- SDL.createRenderer sdlWindow 0 SDL.defaultRenderer
     SDL.rendererDrawBlendMode renderer SDL.$= SDL.BlendAlphaBlend
 
     bracket
       (initTextureManager loadingChan renderer)
       snd
       $ \(textureManager,_) -> forever $ do
-        maybeTask <- readGraphicsChan renderChan
+        maybeTask <- atomicModifyIORef' renderChan $ \task -> (Nothing, task)
         case maybeTask of
           Just task -> task sdlWindow renderer textureManager
           Nothing ->  do
-            maybeTask <- readGraphicsChan loadingChan
+            maybeTask <- readLoadingChan loadingChan
             case maybeTask of
               Just task -> task
               Nothing -> threadDelay 1000
 
   addCleanUp $ killThread graphicsThread
 
-  pure $ Graphics $ writeGraphicsChan renderChan
-
+  pure $ Graphics $ atomicWriteIORef renderChan . Just
 
 drawFrame :: MonadIO m => Graphics -> Camera -> Draw IO -> m ()
 drawFrame (Graphics schedule) camera@(Camera (Rectangle pos size)) (Draw queue) = do

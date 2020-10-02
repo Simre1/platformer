@@ -17,31 +17,15 @@ custom-setup
   setup-depends:
     base >= 4.14 && < 5,
     Cabal >= 3.2.0.0 && < 4,
-    cabal-auto-expose
+    cabal-auto-expose -any
 
 executable game
-  main-is: Main.hs
-  other-modules:
-      AppM
-      Control.Signal
-      Game.Entities
-      Game.MainSignal
-      Game.Scene
-      Game.Scenes.Level
-      Game.Scenes.MainMenu
-      Game.World
-      Graphics.MainSignal
-      Graphics.Dxt
-      Graphics.Draw
-      Data.Ogmo
-      Game.LoadOgmo
-      Input
-      Test
-      Data.Geometry
-      Paths_game
+  default-language: Haskell2010
   hs-source-dirs:
       src
+      scripts/entities
   default-extensions: OverloadedStrings TypeFamilies DataKinds NamedFieldPuns LambdaCase TupleSections GeneralizedNewtypeDeriving DeriveGeneric RankNTypes FlexibleInstances FlexibleContexts MultiParamTypeClasses GADTs ScopedTypeVariables TypeApplications RecursiveDo DeriveFunctor ViewPatterns
+  main-is: Main.hs
   build-depends:
       StateVar
     , apecs
@@ -69,9 +53,25 @@ executable game
     , unagi-chan
     , directory
     , filepath
-  default-language: Haskell2010
+    , file-embed
   ghc-options:
     -Wall
     -O2
     -static
     -threaded
+  other-modules:
+    Control.AppM
+    Control.FrameRate
+    Data.Geometry
+    Data.Ogmo
+    Game.LoadOgmo
+    Game.Step
+    Game.World
+    Graphics.Draw
+    Graphics.Dxt
+    Graphics.Step
+    Input
+    Platform07493618
+    Player04718852
+    ScriptPrelude
+    Scripts

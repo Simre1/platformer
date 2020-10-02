@@ -5,8 +5,11 @@ import qualified SDL.Event as SDL
 
 import Data.Bool (bool)
 import Linear.V2
-import Control.Signal
-import AppM
+import Control.AppM
+import Apecs
+import Data.IORef (readIORef, newIORef, IORef)
+import Apecs.Core
+import Control.Monad.IO.Class (MonadIO)
 
 data Input = Input
   { inputDirection :: (V2 Int)
@@ -15,8 +18,8 @@ data Input = Input
   , inputQuit :: Bool
   } deriving (Show, Eq)
 
-inputSignal :: Signal AppM () Input
-inputSignal = arrM_ $ do
+getInput :: MonadIO m => m Input
+getInput = do
   events <- SDL.pollEvents
   checkScancode <- SDL.getKeyboardState
   let y = bool 0 1 (checkScancode SDL.ScancodeUp) + bool 0 (-1) (checkScancode SDL.ScancodeDown)

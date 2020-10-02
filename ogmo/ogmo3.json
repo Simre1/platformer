@@ -1,0 +1,20 @@
+{
+  "ogmoVersion": "3.3.0",
+  "width": 128,
+  "height": 136,
+  "offsetX": 0,
+  "offsetY": 0,
+  "layers": [
+    {
+      "name": "entities",
+      "_eid": "04700215",
+      "offsetX": 0,
+      "offsetY": 0,
+      "gridCellWidth": 8,
+      "gridCellHeight": 8,
+      "gridCellsX": 16,
+      "gridCellsY": 17,
+      "entities": []
+    }
+  ]
+}

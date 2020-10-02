@@ -1,40 +1,40 @@
 module Main where
 
-import Graphics.MainSignal
-import Game.MainSignal
-import Game.Scene
+import Game.Step
+import Control.FrameRate
+import Control.AppM
 import Input
-import qualified SDL
-import Control.Signal
-import Control.Arrow
-import AppM
 
-import GHC.Clock
-import Control.Monad.IO.Class (MonadIO(liftIO))
+import Graphics.Step
+import Game.Step
+import Graphics.Step
+import qualified SDL
+import Control.Monad (when)
+import Game.World
 import System.Environment (getArgs)
+import Data.Ogmo
 import qualified Data.Text as T
 
 main :: IO ()
 main = do
   args <- getArgs
   case args of
-    [project, level] -> do
+    [level] -> do
+      level <- fmap (either error id) $ loadLevel (T.pack level)
       SDL.initializeAll
-      win <- SDL.createWindow "test" SDL.defaultWindow
-      runAppM $
-        reactimate $
-          limitExecutionRate 60 $ inputSignal >>> 
-            (duplicate >>> second (gameSignal (MainMenu (MainMenuState (T.pack project) (T.pack level)))) >>> drawSignal win)
-              *> arr
-                ( \i -> if inputQuit i then Just () else Nothing
-                )
+      win <- SDL.createWindow "test" SDL.defaultWindow {SDL.windowResizable = True}
+      runAppM $ do
+        limit <- limitExecutionRate 60
+        render <- makeGraphicsStep win
+        runWorld $ do
+          step <- makeGameStep level
+          let loop = do
+                shouldQuit <- limit $ do
+                  input <- getInput
+                  step input
+                  render input
+                  pure $ inputQuit input
+                when (not shouldQuit) $ loop
+          loop
       SDL.quit
-    _ -> putStrLn "You need to supply an ogmo project as well as an ogmo level as arguments"
-
-countFrameRate :: Signal AppM a a
-countFrameRate = feedback 0 $ arrM $ \(a,pT) -> do
-  now <- liftIO $ getMonotonicTimeNSec
-  liftIO $ print (nanosToFPS $ fromIntegral $ now - pT)
-  pure (a,now)
-  where 
-    nanosToFPS nanos = 1000000000 / nanos
+    _ -> putStrLn "You need to supply an ogmo level as an argument"

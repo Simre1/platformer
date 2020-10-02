@@ -1,25 +1,30 @@
 module Data.Ogmo where
 
-import Control.Applicative (Applicative (liftA2))
+import Control.Applicative ((<|>), Applicative (liftA2))
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Aeson
 import Data.Aeson.Types (Parser)
 import Data.Colour (AlphaColour, Colour, black, withOpacity)
 import Data.Colour.SRGB
 import qualified Data.HashMap.Strict as HM
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromJust, fromMaybe)
 import qualified Data.Text as T
 import Data.Word (Word8)
 import Linear.V2
 import qualified System.FilePath as F
+import qualified Data.Vector.Unboxed as VU
+import qualified Data.ByteString as B
 
 loadLevel :: MonadIO m => T.Text -> m (Either String Level)
 loadLevel = liftIO . eitherDecodeFileStrict' . T.unpack
 
 loadProject :: MonadIO m => T.Text -> m (Either String Project)
-loadProject (T.unpack -> path) = liftIO $ fmap ($takeDictionary path) <$> eitherDecodeFileStrict' path
+loadProject (T.unpack -> path) = liftIO $ fmap ($takeDirectory path) <$> eitherDecodeFileStrict' path
   where
-    takeDictionary = T.pack . F.takeDirectory
+    takeDirectory = T.pack . F.takeDirectory
+
+parseProject :: B.ByteString -> T.Text -> Either String Project
+parseProject b t = fmap ($t) $ eitherDecodeStrict' b
 
 data Project = Project
   { pName :: T.Text,
@@ -68,8 +73,18 @@ data Layer = Layer
   { lOffset :: V2 Int,
     lGridCellSize :: V2 Int,
     lGridCells :: V2 Int,
-    lEntities :: [Entity]
+    lType :: LayerType
   }
+  deriving (Show)
+
+data LayerType
+  = EntityLayer
+      { ltEntities :: [Entity]
+      }
+  | TilesetLayer
+      { ltTileSet :: T.Text
+      , ltData :: VU.Vector Int
+      }
   deriving (Show)
 
 data Entity = Entity
@@ -165,7 +180,7 @@ instance FromJSON Entity where
       <*> (V2 <$> v .: "x" <*> v .: "y")
       <*> (V2 <$> v .: "originX" <*> v .: "originY")
       <*> (liftA2 V2 <$> v .:? "width" <*> v .:? "height")
-      <*> (v .: "values" >>= parseValues)
+      <*> (fmap (fromMaybe HM.empty) $ v .:? "values" >>= traverse parseValues)
     where
       parseValues :: Value -> Parser (HM.HashMap T.Text T.Text)
       parseValues = withObject "CustomValue" $ traverse parseJSON
@@ -173,10 +188,21 @@ instance FromJSON Entity where
 instance FromJSON Layer where
   parseJSON = withObject "Layer" $ \v ->
     Layer
-      <$> (V2 <$> v .: "offsetX" <*> v .: "gridCellHeight")
+      <$> (V2 <$> v .: "offsetX" <*> v .: "offsetY")
       <*> (V2 <$> v .: "gridCellWidth" <*> v .: "gridCellHeight")
       <*> (V2 <$> v .: "gridCellsX" <*> v .: "gridCellsY")
-      <*> v .: "entities"
+      <*> parseLayerType v
+    where
+      parseLayerType :: Object -> Parser LayerType
+      parseLayerType v = do
+        maybeEntityLayer <- fmap EntityLayer <$> v .:? "entities"
+        maybeTilesetLayer <- liftA2 TilesetLayer <$> v.:? "tileset" <*> (parseData v)
+        pure $ fromMaybe (error "Unknown Layertype") $ maybeEntityLayer <|> maybeTilesetLayer
+          where
+            parseData :: Object -> Parser (Maybe (VU.Vector Int))
+            parseData v = v .:? "data" >>= traverse parseJSON
+
+
 
 instance FromJSON Level where
   parseJSON = withObject "Level" $ \v ->
